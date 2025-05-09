@@ -70,11 +70,12 @@ fish |>
 #| label: visual-of-missing-values-over-time
 
 fish |> 
-  select(year, section, trip, weight) |> 
-  group_by(trip)
-  summarize(count = tally(is.na())) |>
-  ggplot(mapping = aes()) + 
-  geom_col()
+  group_by(year) |>
+  summarize_all(~sum(is.na(.))) |>
+  ggplot() + 
+  geom_col(aes(x = year, y = weight), fill = "orchid4") + 
+  labs(x = "Year of Survey", y = "Number of Missing Weights") +
+  scale_x_continuous(limits = c(1988,2008))
 ```
 
 ## Rescaling the Data
@@ -121,11 +122,12 @@ function, instead!
 #| label: write-rescale-function
 
 rescale_01 <- function(x) {
-  
-  if ((!is.numeric(x)) && (length(x) < 1)) {
-    stop(NA)
-  }
-  return((x - min(x)) / (range(x)))
+  if (!is.numeric(x)) {
+    stop("NA")}
+  if (length(x) <= 1){
+    stop("NA")}
+  range <- range(x, na.rm = TRUE)
+  return((x - range[1]) / (range[2] - range[1]))
 }
 
 ```
@@ -175,6 +177,7 @@ statement in order to create a `length_scaled` variable.
 
 ```{r}
 #| label: compare-original-with-rescaled-lengths
+#| layout-ncol: 2
 
 fish |>  
   ggplot(aes(x = length)) + 
@@ -183,7 +186,12 @@ fish |>
   scale_y_continuous(limits = c(0,4000))
 
 # Code for Q7 plot.
-
+fish |> 
+  mutate(length_scaled = rescale_01(length)) |>
+  ggplot(aes(x = length_scaled)) + 
+  geom_histogram(binwidth = 0.05) +
+  labs(x = "Rescaled Values of Fish Length (mm)") +
+  scale_y_continuous(limits = c(0,4000))
 ```
 
 ::: callout-tip
@@ -215,7 +223,7 @@ section of R for Data Science!
 
 ```{r}
 #| label: rescale-data-frame-function
-
+#Judith I'm sorry I cannot do this 
 ```
 
 **9. Use your `rescale_column()` function to rescale *both* the `length` and `weight` columns.**
