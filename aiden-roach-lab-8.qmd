@@ -5,12 +5,17 @@ date: today
 embed-resources: TRUE
 code-tools: TRUE
 echo: TRUE
+warning: FALSE
+message: FALSE
 ---
 The goal of this lab is learn more about exploring missing data and writing
 modular code.
 
 ```{r}
 #| label: setup
+#| include: FALSE
+#| show_col_types: FALSE
+
 library(tidyverse)
 
 fish <- read_csv("data-raw/BlackfootFish.csv")
